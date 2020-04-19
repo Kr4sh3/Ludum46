@@ -14,7 +14,7 @@ public class SuctionController : MonoBehaviour
     }
     private void OnTriggerStay2D(Collider2D collision)
     {
-        target = suctionarea.transform.position;
+        target = suctionarea.GetChild(0).transform.position;
         if (collision.gameObject.CompareTag("Log"))
         {
             if (transform.parent.GetComponentInParent<WeaponController>().isSucking)

@@ -14,18 +14,26 @@ public class PlayerController : MonoBehaviour
     private int damagetimer = 0;
     public Material sprDef;
     public Material sprWhite;
+    public AudioSource aud;
     void Start()
     {
         rb = GetComponent<Rigidbody2D>();
         sr = GetComponent<SpriteRenderer>();
         anim = GetComponent<Animator>();
+        aud = GetComponent<AudioSource>();
     }
     // Update is called once per frame
     void Update()
     {
         if (GameManager.GetGameOverStatus() == false)
         {
-        Movement();
+            Movement();
+        }
+        else
+        {
+            sr.material = sprDef;
+            aud.Stop();
+            rb.velocity = new UnityEngine.Vector2(0, 0);
         }
     }
 
@@ -64,7 +72,7 @@ public class PlayerController : MonoBehaviour
             normalizedTime += Time.deltaTime / duration;
             yield return null;
         }
-        if (f % 2 == 0)
+        if (f % 2 == 0 && GameManager.GetGameOverStatus() == false)
         {
             sr.material = sprWhite;
         }

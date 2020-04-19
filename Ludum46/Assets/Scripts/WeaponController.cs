@@ -38,6 +38,7 @@ public class WeaponController : MonoBehaviour
                 anim.SetBool("Clogged", true);
             }
         }
+        else aud.Stop();
     }
     void Flip(int xory)//Flips the gun's x or y scale
     {

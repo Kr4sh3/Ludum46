@@ -90,7 +90,7 @@ public class BulletController : MonoBehaviour
                         GameManager.HealFire(20);
                         Destroy(gameObject);
                     }
-                    if (collision.gameObject.CompareTag("Enemy") && rb.velocity.x > 0 || rb.velocity.y > 0 && collision.gameObject.GetComponent<EnemyController>().health > 0)
+                    if (collision.gameObject.CompareTag("Enemy") && GetComponent<Rigidbody2D>().velocity.magnitude > 0 && collision.gameObject.GetComponent<EnemyController>().health > 0)
                     {
                         collision.gameObject.GetComponent<EnemyController>().DamageEnemy(bulletDamage);
                         collision.gameObject.GetComponent<Rigidbody2D>().velocity = target.normalized * bulletDamage * 12;
@@ -100,6 +100,17 @@ public class BulletController : MonoBehaviour
                 }
         }
     }
+    }
+    private void OnTriggerStay2D(Collider2D collision)
+    {
+        if (collision.gameObject.CompareTag("SuctionPoint") && GameObject.FindGameObjectWithTag("Weapon").GetComponent<WeaponController>().isSucking)
+        {
+            GameObject.FindGameObjectWithTag("Weapon").GetComponent<WeaponController>().clogged = true;
+            GameObject.FindGameObjectWithTag("Weapon").GetComponent<AudioSource>().clip = Resources.Load<AudioClip>("Sounds/LogPlunk");
+            GameObject.FindGameObjectWithTag("Weapon").GetComponent<AudioSource>().volume = .5f;
+            GameObject.FindGameObjectWithTag("Weapon").GetComponent<AudioSource>().Play();
+            Destroy(gameObject);
+        }
     }
     public void DestroySelf()
     {

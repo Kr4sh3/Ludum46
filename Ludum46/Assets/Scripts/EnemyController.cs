@@ -124,11 +124,7 @@ public class EnemyController : MonoBehaviour
             normalizedTime += Time.deltaTime / duration;
             yield return null;
         }
-        int rand = Random.Range(0, 5);
-        if(rand > 0)
-        {
             GameObject log = Instantiate(logItem, transform.position, Quaternion.identity);
             log.GetComponent<Rigidbody2D>().velocity = new Vector2(Random.Range(0, 10), Random.Range(0, 10));
-        }
     }
 }

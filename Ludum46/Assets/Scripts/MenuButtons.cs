@@ -83,7 +83,12 @@ public class MenuButtons : MonoBehaviour
     }
     public IEnumerator NextScene()
     {
-        float duration = 1f;
+        float duration;
+        if (isQuitButton || isStartButton)
+        {
+            duration = 1f;
+        }
+        else  duration = .2f;
         float normalizedTime = 0;
         while (normalizedTime <= 1f)
         {
