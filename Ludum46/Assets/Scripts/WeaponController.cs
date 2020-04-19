@@ -6,20 +6,35 @@ public class WeaponController : MonoBehaviour
 {
     public Camera cameraMain;
     public GameObject bullet;
+    public GameObject logBullet;
     public float cooldown;
-    private float cooldownTimer;
+    private float cooldownTimer = 10;
+    private Transform instantiationpoint;
+    public int chargecounter;
+    public bool isSucking = false;
+    public bool clogged = false;
+    private Animator anim;
     // Start is called before the first frame update
     void Start()
     {
         cameraMain = Camera.main;
+        anim = GetComponent<Animator>();
     }
 
     // Update is called once per frame
     void Update()
     {
-        RotSelf();
-        FlipSelf();
-        Controls();
+        if (GameManager.GetGameOverStatus() == false)
+        {
+            RotSelf();
+            FlipSelf();
+            Controls();
+            instantiationpoint = transform.GetChild(0).transform;
+            if (clogged)
+            {
+                anim.SetBool("Clogged", true);
+            }
+        }
     }
     void Flip(int xory)//Flips the gun's x or y scale
     {
@@ -78,13 +93,77 @@ public class WeaponController : MonoBehaviour
     private void Controls()
     {
         cooldownTimer += Time.deltaTime;
-       if (Input.GetAxis("Fire1") == 1 && cooldownTimer > cooldown){
-            Instantiate(bullet,transform.position,Quaternion.identity);
-            cooldownTimer = 0;
-        }
-        if (Input.GetAxis("Fire2") == 1)
+        if (Input.GetAxis("Fire1") == 1 && cooldownTimer >= cooldown && Input.GetAxis("Fire2") == 0)
         {
-            print("fire2");
+            chargecounter++;
+            cooldownTimer = 0;
+            if(chargecounter > 1)
+            {
+                anim.SetBool("Charged", true);
+            }
+        }
+        if (Input.GetAxis("Fire1") == 0 && chargecounter > 0)
+        {
+            anim.SetBool("Charged", false);
+            if (clogged == false)
+            {
+                GameObject projectile1 = Instantiate(bullet, instantiationpoint.position, Quaternion.identity);
+                if (chargecounter == 1)
+                {
+                    projectile1.GetComponent<BulletController>().bulletDamage = 1;
+                    projectile1.GetComponent<BulletController>().bulletSpeed = 1;
+                }
+                else if (chargecounter == 2)
+                {
+                    projectile1.GetComponent<BulletController>().bulletDamage = 2;
+                    projectile1.GetComponent<BulletController>().bulletSpeed = 2;
+                    projectile1.transform.localScale = projectile1.transform.localScale * 1.25f;
+                }
+                else if (chargecounter >= 3)
+                {
+                    projectile1.GetComponent<BulletController>().bulletDamage = 3;
+                    projectile1.GetComponent<BulletController>().bulletSpeed = 3;
+                    projectile1.transform.localScale = projectile1.transform.localScale * 1.5f;
+                }
+                projectile1.GetComponent<BulletController>().isMainAttack = true;
+                projectile1.GetComponent<BulletController>().DestroySelf();
+            }
+            else
+            {
+                GameObject projectile2 = Instantiate(logBullet, instantiationpoint.position, Quaternion.identity);
+                if (chargecounter == 1)
+                {
+                    projectile2.GetComponent<BulletController>().bulletDamage = 2;
+                    projectile2.GetComponent<BulletController>().bulletSpeed = 15;
+                }
+                else if (chargecounter == 2)
+                {
+                    projectile2.GetComponent<BulletController>().bulletDamage = 4;
+                    projectile2.GetComponent<BulletController>().bulletSpeed = 20;
+                }
+                else if (chargecounter >= 3)
+                {
+                    projectile2.GetComponent<BulletController>().bulletDamage = 6;
+                    projectile2.GetComponent<BulletController>().bulletSpeed = 25;
+                }
+                projectile2.GetComponent<Rigidbody2D>().drag = 5;
+                projectile2.GetComponent<BulletController>().isMainAttack = false;
+                clogged = false;
+                anim.SetBool("Clogged", false);
+            }
+            chargecounter = 0;
+        }
+        if (Input.GetAxis("Fire2") == 1 && Input.GetAxis("Fire1") == 0 && clogged == false)
+        {
+            transform.GetChild(0).GetComponent<Animator>().SetBool("Sucking", true);
+            isSucking = true;
+            anim.SetBool("Sucking", true);
+        }
+        else
+        {
+            isSucking = false;
+            transform.GetChild(0).GetComponent<Animator>().SetBool("Sucking", false);
+            anim.SetBool("Sucking", false);
         }
     }
 }
