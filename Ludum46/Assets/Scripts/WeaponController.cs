@@ -14,11 +14,14 @@ public class WeaponController : MonoBehaviour
     public bool isSucking = false;
     public bool clogged = false;
     private Animator anim;
+    private AudioSource aud;
+    private bool sucstart;
     // Start is called before the first frame update
     void Start()
     {
         cameraMain = Camera.main;
         anim = GetComponent<Animator>();
+        aud = GetComponent<AudioSource>();
     }
 
     // Update is called once per frame
@@ -110,17 +113,20 @@ public class WeaponController : MonoBehaviour
                 GameObject projectile1 = Instantiate(bullet, instantiationpoint.position, Quaternion.identity);
                 if (chargecounter == 1)
                 {
+                    aud.clip = Resources.Load<AudioClip>("Sounds/Gust2");
                     projectile1.GetComponent<BulletController>().bulletDamage = 1;
                     projectile1.GetComponent<BulletController>().bulletSpeed = 1;
                 }
                 else if (chargecounter == 2)
                 {
+                    aud.clip = Resources.Load<AudioClip>("Sounds/Gust1");
                     projectile1.GetComponent<BulletController>().bulletDamage = 2;
                     projectile1.GetComponent<BulletController>().bulletSpeed = 2;
                     projectile1.transform.localScale = projectile1.transform.localScale * 1.25f;
                 }
                 else if (chargecounter >= 3)
                 {
+                    aud.clip = Resources.Load<AudioClip>("Sounds/Gust1");
                     projectile1.GetComponent<BulletController>().bulletDamage = 3;
                     projectile1.GetComponent<BulletController>().bulletSpeed = 3;
                     projectile1.transform.localScale = projectile1.transform.localScale * 1.5f;
@@ -151,16 +157,29 @@ public class WeaponController : MonoBehaviour
                 clogged = false;
                 anim.SetBool("Clogged", false);
             }
+            aud.Play();
+            aud.volume = 1;
             chargecounter = 0;
         }
         if (Input.GetAxis("Fire2") == 1 && Input.GetAxis("Fire1") == 0 && clogged == false)
         {
+            aud.clip = Resources.Load<AudioClip>("Sounds/Suction");
+            if (!aud.isPlaying)
+            {
+                aud.loop = true;
+                aud.Play();
+            }
             transform.GetChild(0).GetComponent<Animator>().SetBool("Sucking", true);
             isSucking = true;
             anim.SetBool("Sucking", true);
         }
         else
         {
+            if(aud.clip == Resources.Load<AudioClip>("Sounds/Suction"))
+            {
+                aud.Stop();
+            }
+            aud.loop = false;
             isSucking = false;
             transform.GetChild(0).GetComponent<Animator>().SetBool("Sucking", false);
             anim.SetBool("Sucking", false);

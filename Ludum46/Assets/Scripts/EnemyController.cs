@@ -18,12 +18,14 @@ public class EnemyController : MonoBehaviour
     public GameObject logItem;
     public float damagesize;
     public SpriteRenderer spr;
+    private AudioSource aud;
     void Start()
     {
         target = GameObject.FindGameObjectWithTag("Fire").transform.position;
         rb = GetComponent<Rigidbody2D>();
         anim = GetComponent<Animator>();
         spr = GetComponent<SpriteRenderer>();
+        aud = GetComponent<AudioSource>();
     }
 
     // Update is called once per frame
@@ -51,6 +53,8 @@ public class EnemyController : MonoBehaviour
             if (attacktimer > attackcooldown && health > 0)
             {
                 attacktimer = 0;
+                aud.clip = Resources.Load<AudioClip>("Sounds/WaterDrip");
+                aud.Play();
                 GameManager.DamageFire(firedamage);
             }
             Collider2D[] collisions = Physics2D.OverlapCircleAll(transform.position, .7f);
@@ -88,14 +92,25 @@ public class EnemyController : MonoBehaviour
     }
     public void DamageEnemy(int d)
     {
-        if (GameManager.GetGameOverStatus() == false)
+        if (GameManager.GetGameOverStatus() == false && health > 0)
         {
             damagesize = .2f;
             if (health - d <= 0 && health > 0)
             {
+                int randint = Random.Range(0, 2);
+                if(randint > 0)
+                {
+                    aud.clip = Resources.Load<AudioClip>("Sounds/TreeDeath2");
+                } else aud.clip = Resources.Load<AudioClip>("Sounds/TreeDeath3");
+                aud.Play();
                 Destroy(gameObject, 1f);
                 StartCoroutine(SpawnLog());
                 GameManager.AddScore(250);
+            }
+            else
+            {
+                aud.clip = Resources.Load<AudioClip>("Sounds/TreeDeath1");
+                aud.Play();
             }
             health -= d;
         }

@@ -8,10 +8,12 @@ public class FireController : MonoBehaviour
 {
     UnityEngine.Experimental.Rendering.Universal.Light2D firelight;
     public float woodburn;
+    private AudioSource aud;
 
     private void Start()
     {
         firelight = GetComponent<UnityEngine.Experimental.Rendering.Universal.Light2D>();
+        aud = GetComponent<AudioSource>();
     }
     // Update is called once per frame
     void Update()
@@ -44,6 +46,8 @@ public class FireController : MonoBehaviour
         {
             int firechild = Random.Range(0, 5);
             transform.GetChild(firechild).GetComponent<ParticleSpawner>().SpawnParticle();
+            aud.clip = Resources.Load<AudioClip>("Sounds/FireGust");
+            aud.Play();
         }
         if(h == 2)
         {
@@ -52,6 +56,8 @@ public class FireController : MonoBehaviour
                 int firechild = Random.Range(0, 5);
                 transform.GetChild(firechild).GetComponent<ParticleSpawner>().SpawnParticle();
             }
+            aud.clip = Resources.Load<AudioClip>("Sounds/FireGust");
+            aud.Play();
         }
         if(h > 2)
         {
@@ -60,6 +66,8 @@ public class FireController : MonoBehaviour
                 int firechild = Random.Range(0, 5);
                 transform.GetChild(firechild).GetComponent<ParticleSpawner>().SpawnParticle();
             }
+            aud.clip = Resources.Load<AudioClip>("Sounds/FireLog");
+            aud.Play();
         }
     }
 }

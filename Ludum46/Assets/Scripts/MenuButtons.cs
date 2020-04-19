@@ -62,25 +62,22 @@ public class MenuButtons : MonoBehaviour
     }
     private void OnMouseDown()
     {
+        GetComponent<AudioSource>().Play();
         if (isStartButton)
         {
             GetComponent<SpriteRenderer>().sprite = Resources.Load<Sprite>("LudumStart3");
-            StartCoroutine(NextScene());
         }
         if (isRestartButton)
         {
             GetComponent<SpriteRenderer>().sprite = Resources.Load<Sprite>("LudumRestart3");
-            SceneManager.LoadScene(1);
         }
         if (isQuitButton)
         {
             GetComponent<SpriteRenderer>().sprite = Resources.Load<Sprite>("LudumQuit3");
-            StartCoroutine(NextScene());
         }
         if (isTitleButton)
         {
             GetComponent<SpriteRenderer>().sprite = Resources.Load<Sprite>("LudumTitle3");
-            SceneManager.LoadScene(0);
         }
         StartCoroutine(NextScene());
     }
@@ -90,8 +87,11 @@ public class MenuButtons : MonoBehaviour
         float normalizedTime = 0;
         while (normalizedTime <= 1f)
         {
-            GameObject.FindGameObjectWithTag("MenuLight").GetComponent<UnityEngine.Experimental.Rendering.Universal.Light2D>().pointLightOuterRadius -= Time.deltaTime * 10;
-            GameObject.FindGameObjectWithTag("MenuLight").GetComponent<UnityEngine.Experimental.Rendering.Universal.Light2D>().pointLightOuterRadius = Mathf.Clamp(GameObject.FindGameObjectWithTag("MenuLight").GetComponent<UnityEngine.Experimental.Rendering.Universal.Light2D>().pointLightOuterRadius, 0, 10);
+            if(isQuitButton || isStartButton)
+            {
+                GameObject.FindGameObjectWithTag("MenuLight").GetComponent<UnityEngine.Experimental.Rendering.Universal.Light2D>().pointLightOuterRadius -= Time.deltaTime * 10;
+                GameObject.FindGameObjectWithTag("MenuLight").GetComponent<UnityEngine.Experimental.Rendering.Universal.Light2D>().pointLightOuterRadius = Mathf.Clamp(GameObject.FindGameObjectWithTag("MenuLight").GetComponent<UnityEngine.Experimental.Rendering.Universal.Light2D>().pointLightOuterRadius, 0, 10);
+            }
             normalizedTime += Time.deltaTime / duration;
             yield return null;
         }
@@ -102,6 +102,14 @@ public class MenuButtons : MonoBehaviour
         if (isQuitButton)
         {
             Application.Quit();
+        }
+        if (isTitleButton)
+        {
+            SceneManager.LoadScene(0);
+        }
+        if (isRestartButton)
+        {
+            SceneManager.LoadScene(1);
         }
     }
 }

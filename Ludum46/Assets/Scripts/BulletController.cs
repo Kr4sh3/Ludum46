@@ -79,8 +79,11 @@ public class BulletController : MonoBehaviour
                 {
                     if (collision.gameObject.CompareTag("SuctionPoint") && GameObject.FindGameObjectWithTag("Weapon").GetComponent<WeaponController>().isSucking)
                     {
-                        Destroy(gameObject);
                         GameObject.FindGameObjectWithTag("Weapon").GetComponent<WeaponController>().clogged = true;
+                        GameObject.FindGameObjectWithTag("Weapon").GetComponent<AudioSource>().clip = Resources.Load<AudioClip>("Sounds/LogPlunk");
+                        GameObject.FindGameObjectWithTag("Weapon").GetComponent<AudioSource>().volume = .5f;
+                        GameObject.FindGameObjectWithTag("Weapon").GetComponent<AudioSource>().Play();
+                        Destroy(gameObject);
                     }
                     if (collision.gameObject.CompareTag("Fire"))
                     {
